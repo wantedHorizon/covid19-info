@@ -1,0 +1,22 @@
+.main-display {}
+
+body {
+    background: #333;
+}
+
+main {
+    background: blue;
+    width: 70vw;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+
+.chart-container {
+    position: relative;
+    margin: 0 auto;
+    height: 60vh;
+    background: #e5e5ee;
+    border-radius: 5px;
+}

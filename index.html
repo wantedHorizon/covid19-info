@@ -10,7 +10,46 @@
 </head>
 
 <body>
-    <canvas id="myChart" width="400" height="400"></canvas>
+    <div class="container">
+        <main>
+            <div class="main__display">
+                <div class="chart-container">
+                    <canvas id="myChart"></canvas>
+                </div>
+                <div class="main__single-country-info" hidden> </div>
+            </div>
+
+            <div class="options">
+                <div class="row region">Regions:
+                    <button data-region="global">Global</button>
+                    <button data-region="asia">Asia</button>
+                    <button data-region="americas">North-America</button>
+                    <button data-region="africas">Africa</button>
+                    <button data-region="europe">Europe</button>
+                </div>
+
+                <div class="row types">Types:
+
+                    <button data-type="cases"> Confirmed Cases</button>
+                    <button data-type="cases">Number of Deaths</button>
+                    <button data-type="cases">Number of recovered</button>
+                    <button data-type="cases">Number of critical condition</button>
+
+                </div>
+            </div>
+        </main>
+        <!-- 
+        <section>
+            {<button> CountryName</button>} * //all the countries
+        </section> -->
+
+
+
+
+
+
+
+    </div>
 
     <script src="./js/script.js"></script>
 </body>
