@@ -5,7 +5,7 @@ body {
 }
 
 main {
-    background: blue;
+    background: #f6f6f6;
     width: 70vw;
     margin: auto;
     display: flex;

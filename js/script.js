@@ -9,17 +9,21 @@ const state = {
   displayedData: [],
   loading: true,
   currentRegion: 'global',
-  currentStatisticsType: null
+  currentStatisticsType: null,
+  chart: null
   
   
 }
 
 
 const onRegionClickHandler = (e) => {
-  console.log(e.target);
-  const region = e.target.dataset.region ||  'global';
-  const type = e.target.dataset.type ||'cases';
+  // console.log(e.target);
+  // debugger;
+  const region = e.target.dataset.region || state.currentRegion || 'global';
+  const type = e.target.dataset.type || state.currentStatisticsType ||'cases';
   console.log(region, type);
+  state.currentRegion = region;
+  state.currentStatisticsType = type;
   updateCharts({ region: region, statType: type });
 
 
@@ -54,7 +58,6 @@ const fetchCovidByCountryCode = (code) => {
 const fetchCovidByRegion = async (region) => {
   // const countries = await fetchAndParse(`${proxy}${baseRestCountriesURL}europe`);
   const countries = await fetchAndParse(`${proxy}${baseRestCountriesURL}${region}`);
-  console.log(countries);
 
   const promiseArr = countries.map(country => {
     // console.log(country.cca2);
@@ -105,11 +108,8 @@ const mapDataToTable = (data) => {
   }
 }
 
-const updateCharts = async ({ region, statType, code }) => {
+const updateCharts = async ({ region, statType }) => {
   try {
-
-
-    // console.log(region);
     let data;
     let tableData;
     switch (region) {
@@ -129,17 +129,34 @@ const updateCharts = async ({ region, statType, code }) => {
         break;
     }
 
-    createChartData({ label: `${region}-${statType}`, dataNumbers: tableData.cases, countriesNames: tableData.labels })
+    createChartData({ label: `${region}-${statType}`, dataNumbers: tableData[statType], countriesNames: tableData.labels });
   } catch (e) {
     console.log(e);
   }
 
 }
 
+
+// const createChart = async ({ region, statType, code }) => {
+//   try {
+//     let data;
+//     let tableData;
+//     data = await fetchCovidAll();
+//     tableData = mapDataToTable(data.data);
+       
+//     createChartData({ label: `${region}-${statType}`, dataNumbers: tableData[statType], countriesNames: tableData.labels });
+//   } catch (e) {
+//     console.log(e);
+//   }
+
+// }
+
 ///////////////////////////////////////////////////////////////////
 
 const createChartData = ({ label, dataNumbers, countriesNames }) => {
 
+  document.querySelector('.chart-container').innerHTML =`<canvas id="myChart"></canvas>`;
+  // debugger;
   const data = {
     labels: countriesNames,
     datasets: [{
@@ -171,7 +188,7 @@ const createChartData = ({ label, dataNumbers, countriesNames }) => {
     }
   };
 
-  Chart.Bar('myChart', {
+  state.chart =Chart.Bar('myChart', {
     options: optionTable,
     data: data
   });
@@ -179,7 +196,43 @@ const createChartData = ({ label, dataNumbers, countriesNames }) => {
 }
 
 
+// const updateChartData = ({ label, dataNumbers, countriesNames }) => {
 
+//   const data = {
+//     labels: countriesNames,
+//     datasets: [{
+//       label: label,
+//       backgroundColor: "rgba(255,99,132,0.2)",
+//       borderColor: "rgba(255,99,132,1)",
+//       borderWidth: 0.5,
+//       hoverBackgroundColor: "rgba(255,99,132,0.4)",
+//       hoverBorderColor: "rgba(255,99,132,1)",
+//       data: dataNumbers,
+//     }]
+//   };
+//   state.chart.options=  data;
+//   state.chart.update( {
+//     maintainAspectRatio: false,
+//     scales: {
+//       yAxes: [{
+//         stacked: true,
+//         gridLines: {
+//           display: true,
+//           color: "rgba(255,99,132,0.2)"
+//         }
+//       }],
+//       xAxes: [{
+//         gridLines: {
+//           display: true
+//         }
+//       }]
+//     }
+//   });
+
+// }
+
+
+ updateCharts ({ region:'global', statType:'cases' });
   //////////////////////////////////////////////////////////////////
 
   // fetchCountriesCodeByRegion('asia');
