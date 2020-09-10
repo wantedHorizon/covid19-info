@@ -37,5 +37,7 @@ const fetchCountriesCodeByRegion= async(region) => {
     return data;
 }
 
+
+
 // fetchCountriesCodeByRegion('asia');
 // console.log(fetchCovidAll());
