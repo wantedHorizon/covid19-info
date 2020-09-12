@@ -1,13 +1,12 @@
 const baseCovidURL = ' https://corona-api.com/';
 const baseRestCountriesURL = 'https://restcountries.herokuapp.com/api/v1/region/';
-// const proxy = `https://cors-anywhere.herokuapp.com/`;
 const proxy = 'https://api.allorigins.win/raw?url=';
 const loading = document.querySelector('.loading');
 const main = document.querySelector('.main__display');
 
 const state = {
   
-  displayedData: [],
+  allData: [],
   loading: true,
   currentRegion: 'global',
   currentStatisticsType: null,
@@ -17,21 +16,33 @@ const state = {
 }
 
 
-
+// show loading icon
 const showLoading  = () => {
 
-
+  state.loading =true;
   loading.removeAttribute('hidden');
   main.setAttribute('hidden',null);
 
 
 }
-
+//remove loading icon
 const removeLoading  = () => {
+  state.loading =false;
 
   main.removeAttribute('hidden');
   loading.setAttribute('hidden',null);
 
+}
+//display single country data
+const displaySingleCountry = () => {
+  document.querySelector('.main__single-country-info').removeAttribute('hidden');
+  document.querySelector('.chart-container').setAttribute('hidden',null);
+
+}
+//display chart
+const displayMultiCountries = () => {
+  document.querySelector('.chart-container').removeAttribute('hidden');
+  document.querySelector('.main__single-country-info').setAttribute('hidden',null);
 }
 
 
@@ -52,12 +63,12 @@ const fetchCovidAll = async () => {
   const data = await fetchAndParse(`${baseCovidURL}countries`);
   return data;
 }
-
+//fetch single country data
 const fetchCovidByCountryCode = (code) => {
   const data = fetchAndParse(`${baseCovidURL}countries\\${code}`);
   return data;
 }
-
+//fetch by region
 const fetchCovidByRegion = async (region) => {
   // const countries = await fetchAndParse(`${proxy}${baseRestCountriesURL}europe`);
   const countries = await fetchAndParse(`${proxy}${baseRestCountriesURL}${region}`);
@@ -72,7 +83,7 @@ const fetchCovidByRegion = async (region) => {
   const data = await Promise.all(promiseArr);
   return data;
 }
-
+//convert data 
 const mapDataToTable = (data) => {
   const labels = [];
   const cases = [];
@@ -110,6 +121,17 @@ const mapDataToTable = (data) => {
     critical: critical
   }
 }
+//create coutries buttons
+const createBtn =() => {
+  const btns = state.allData.map((c,i) => {
+    return `<button data-index="${i}"> ${c.name}</button>`;
+  });
+  
+  document.querySelector('.countries').innerHTML= btns.join(' ');
+  document.querySelectorAll('.countries button').forEach( btn => {
+    btn.addEventListener('click', onCountrySelectHandler);
+  })
+}
 
 const updateCharts = async ({ region, statType }) => {
   try {
@@ -120,7 +142,9 @@ const updateCharts = async ({ region, statType }) => {
       case 'global':
         console.log("global display");
         data = await fetchCovidAll();
+        state.allData =state.allData.concat(data.data);
         tableData = mapDataToTable(data.data);
+        createBtn();
         break;
       case region.includes('singleCountry'):
         console.log('single');
@@ -147,10 +171,30 @@ const updateCharts = async ({ region, statType }) => {
 
 
 //events 
+const onCountrySelectHandler = e => {
+  if(state.loading)
+    return;
+  const index =e.target.dataset.index;
+  const info =state.allData[index];
+  console.log(info);
+  const singleCountry =document.querySelector('.main__single-country-info');
+  singleCountry.innerHTML = `
+  <h3> ${info.name} </h3>
+    <p> Total Cases: ${info.latest_data.confirmed} </p>
+    <p> New Cases:${info.today.confirmed} </p>
+    <p> Total Death: ${info.latest_data.deaths}</p>
+    <p> new Deaths: ${info.today.deaths}</p>
+    <p> Total Recovered: ${info.latest_data.recovered}</p>
+    <p> In critical condition:${info.latest_data.critical} </p>
 
+  `;
+
+  displaySingleCountry();
+  state.loading =false;
+}
 const onRegionClickHandler = (e) => {
-  // console.log(e.target);
-  // debugger;
+  if(state.loading)
+    return;
   const region = e.target.dataset.region || state.currentRegion || 'global';
   const type = e.target.dataset.type || state.currentStatisticsType ||'cases';
   console.log(region, type);
@@ -158,11 +202,12 @@ const onRegionClickHandler = (e) => {
   state.currentStatisticsType = type;
   updateCharts({ region: region, statType: type });
   
-  sho
-  
+  displayMultiCountries();
+  state.loading =false;
+
 }
 
-
+//map data to chart object
 const createChartData = ({ label, dataNumbers, countriesNames }) => {
 
   document.querySelector('.chart-container').innerHTML =`<canvas id="myChart"></canvas>`;
@@ -209,75 +254,12 @@ const createChartData = ({ label, dataNumbers, countriesNames }) => {
 
 
 //main
-
 document.querySelectorAll('.options button').forEach(btn => {btn.addEventListener('click',onRegionClickHandler)});
+updateCharts ({ region:'global', statType:'cases' });
 
 
 
 
 
 
-
-
-
-
-
-// const createChart = async ({ region, statType, code }) => {
-//   try {
-//     let data;
-//     let tableData;
-//     data = await fetchCovidAll();
-//     tableData = mapDataToTable(data.data);
-       
-//     createChartData({ label: `${region}-${statType}`, dataNumbers: tableData[statType], countriesNames: tableData.labels });
-//   } catch (e) {
-//     console.log(e);
-//   }
-
-// }
-
-///////////////////////////////////////////////////////////////////
-
-
-// const updateChartData = ({ label, dataNumbers, countriesNames }) => {
-
-//   const data = {
-//     labels: countriesNames,
-//     datasets: [{
-//       label: label,
-//       backgroundColor: "rgba(255,99,132,0.2)",
-//       borderColor: "rgba(255,99,132,1)",
-//       borderWidth: 0.5,
-//       hoverBackgroundColor: "rgba(255,99,132,0.4)",
-//       hoverBorderColor: "rgba(255,99,132,1)",
-//       data: dataNumbers,
-//     }]
-//   };
-//   state.chart.options=  data;
-//   state.chart.update( {
-//     maintainAspectRatio: false,
-//     scales: {
-//       yAxes: [{
-//         stacked: true,
-//         gridLines: {
-//           display: true,
-//           color: "rgba(255,99,132,0.2)"
-//         }
-//       }],
-//       xAxes: [{
-//         gridLines: {
-//           display: true
-//         }
-//       }]
-//     }
-//   });
-
-// }
-
-
- updateCharts ({ region:'global', statType:'cases' });
-  //////////////////////////////////////////////////////////////////
-
-  // fetchCountriesCodeByRegion('asia');
-  // console.log(fetchCovidAll());
 

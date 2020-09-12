@@ -38,28 +38,68 @@ state = {
 * **fetchCountriesCodeByRegion= async(region)**
   > fetch covid-19 info of a full region by calling etchCovidByCountryCode multiple times.
 
+
+
+- **showLoading**
+  >  add loading icon
+
+
+- **removeLoading**
+  > remove loading icon
+- **displaySingleCountry**
+  > display single country data
+
+- **displayMultiCountries**
+  > display chart object
+
+- **mapDataToTable**
+  > convert countries data to relevant.
+
+- **updateCharts**
+  > creating updated chart object from selectedData
+
+
 # Page View
 
 ```
 body {
-    <div class="wrapper">
-  <main>
-        <div class="main__display">
-            <canvas id="myChart" width="400" height="400"></canvas>
-            <div class="main__single-country-info"> </div>
-        </div>
+   <div class="container">
+        <main>
+            <div class="main__display">
+                <div class="chart-container">
+                    <canvas id="myChart"></canvas>
+                </div>
+                <div class="main__single-country-info" hidden> </div>
+            </div>
+            <div class="loading">
+                Loading...
+            </div>
 
-        <div class="opitons">
-  </main>
+            <div class="options">
+                <div class="row region">Regions:
+                    <button data-region="global">Global</button>
+                    <button data-region="asia">Asia</button>
+                    <button data-region="americas">America</button>
+                    <button data-region="africa">Africa</button>
+                    <button data-region="europe">Europe</button>
+                </div>
 
-  <section>
-    {<button> CountryName</button>} * //all the countries
-  </section>
+                <div class="row types">Types:
+                    <button data-type="cases"> Confirmed Cases</button>
+                    <button data-type="deaths">Number of Deaths</button>
+                    <button data-type="recovered">Number of recovered</button>
+                    <button data-type="critical">Number of critical condition</button>
+                </div>
+            </div>
+            <hr>
+            <h4>Countries:</h4>
+            <section>
+                <div class="countries">
+                </div>
+            </section>
+        </main>
 
-
-
-
-
+    </div>
 
 
      </div>
