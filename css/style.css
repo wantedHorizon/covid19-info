@@ -20,3 +20,7 @@ main {
     background: #e5e5ee;
     border-radius: 5px;
 }
+
+.loading {
+    font-size: 40px;
+}

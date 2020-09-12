@@ -2,7 +2,8 @@ const baseCovidURL = ' https://corona-api.com/';
 const baseRestCountriesURL = 'https://restcountries.herokuapp.com/api/v1/region/';
 // const proxy = `https://cors-anywhere.herokuapp.com/`;
 const proxy = 'https://api.allorigins.win/raw?url=';
-
+const loading = document.querySelector('.loading');
+const main = document.querySelector('.main__display');
 
 const state = {
   
@@ -16,23 +17,25 @@ const state = {
 }
 
 
-const onRegionClickHandler = (e) => {
-  // console.log(e.target);
-  // debugger;
-  const region = e.target.dataset.region || state.currentRegion || 'global';
-  const type = e.target.dataset.type || state.currentStatisticsType ||'cases';
-  console.log(region, type);
-  state.currentRegion = region;
-  state.currentStatisticsType = type;
-  updateCharts({ region: region, statType: type });
 
+const showLoading  = () => {
+
+
+  loading.removeAttribute('hidden');
+  main.setAttribute('hidden',null);
 
 
 }
 
-document.querySelectorAll('.options button').forEach(btn => {btn.addEventListener('click',onRegionClickHandler)});
+const removeLoading  = () => {
+
+  main.removeAttribute('hidden');
+  loading.setAttribute('hidden',null);
+
+}
 
 
+//fetch async
 const fetchAndParse = async (url) => {
   try {
     const response = await fetch(url);
@@ -110,6 +113,7 @@ const mapDataToTable = (data) => {
 
 const updateCharts = async ({ region, statType }) => {
   try {
+    showLoading();
     let data;
     let tableData;
     switch (region) {
@@ -132,26 +136,32 @@ const updateCharts = async ({ region, statType }) => {
     createChartData({ label: `${region}-${statType}`, dataNumbers: tableData[statType], countriesNames: tableData.labels });
   } catch (e) {
     console.log(e);
+  } finally {
+    removeLoading();
   }
+
 
 }
 
 
-// const createChart = async ({ region, statType, code }) => {
-//   try {
-//     let data;
-//     let tableData;
-//     data = await fetchCovidAll();
-//     tableData = mapDataToTable(data.data);
-       
-//     createChartData({ label: `${region}-${statType}`, dataNumbers: tableData[statType], countriesNames: tableData.labels });
-//   } catch (e) {
-//     console.log(e);
-//   }
 
-// }
 
-///////////////////////////////////////////////////////////////////
+//events 
+
+const onRegionClickHandler = (e) => {
+  // console.log(e.target);
+  // debugger;
+  const region = e.target.dataset.region || state.currentRegion || 'global';
+  const type = e.target.dataset.type || state.currentStatisticsType ||'cases';
+  console.log(region, type);
+  state.currentRegion = region;
+  state.currentStatisticsType = type;
+  updateCharts({ region: region, statType: type });
+  
+  sho
+  
+}
+
 
 const createChartData = ({ label, dataNumbers, countriesNames }) => {
 
@@ -193,7 +203,40 @@ const createChartData = ({ label, dataNumbers, countriesNames }) => {
     data: data
   });
 
+
+
 }
+
+
+//main
+
+document.querySelectorAll('.options button').forEach(btn => {btn.addEventListener('click',onRegionClickHandler)});
+
+
+
+
+
+
+
+
+
+
+
+// const createChart = async ({ region, statType, code }) => {
+//   try {
+//     let data;
+//     let tableData;
+//     data = await fetchCovidAll();
+//     tableData = mapDataToTable(data.data);
+       
+//     createChartData({ label: `${region}-${statType}`, dataNumbers: tableData[statType], countriesNames: tableData.labels });
+//   } catch (e) {
+//     console.log(e);
+//   }
+
+// }
+
+///////////////////////////////////////////////////////////////////
 
 
 // const updateChartData = ({ label, dataNumbers, countriesNames }) => {
